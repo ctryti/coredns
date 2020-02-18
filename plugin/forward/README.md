@@ -52,6 +52,7 @@ forward FROM TO... {
     tls_servername NAME
     policy random|round_robin|sequential
     health_check DURATION
+    health_check_non_recursive
     max_concurrent MAX
 }
 ~~~
@@ -86,6 +87,7 @@ forward FROM TO... {
   * `round_robin` is a policy that selects hosts based on round robin ordering.
   * `sequential` is a policy that selects hosts based on sequential ordering.
 * `health_check`, use a different **DURATION** for health checking, the default duration is 0.5s.
+* `health_check_non_recursive`, sets the RecursionDesired-flag of the dns-query used in health checking to `false`. The flag is default `true`.
 * `max_concurrent` **MAX** will limit the number of concurrent queries to **MAX**.  Any new query that would
   raise the number of concurrent queries above the **MAX** will result in a SERVFAIL response. This
   response does not count as a health failure. When choosing a value for **MAX**, pick a number

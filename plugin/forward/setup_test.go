@@ -21,21 +21,24 @@ func TestSetup(t *testing.T) {
 		expectedErr     string
 	}{
 		// positive
-		{"forward . 127.0.0.1", false, ".", nil, 2, options{}, ""},
-		{"forward . 127.0.0.1 {\nexcept miek.nl\n}\n", false, ".", nil, 2, options{}, ""},
-		{"forward . 127.0.0.1 {\nmax_fails 3\n}\n", false, ".", nil, 3, options{}, ""},
-		{"forward . 127.0.0.1 {\nforce_tcp\n}\n", false, ".", nil, 2, options{forceTCP: true}, ""},
-		{"forward . 127.0.0.1 {\nprefer_udp\n}\n", false, ".", nil, 2, options{preferUDP: true}, ""},
-		{"forward . 127.0.0.1 {\nforce_tcp\nprefer_udp\n}\n", false, ".", nil, 2, options{preferUDP: true, forceTCP: true}, ""},
-		{"forward . 127.0.0.1:53", false, ".", nil, 2, options{}, ""},
-		{"forward . 127.0.0.1:8080", false, ".", nil, 2, options{}, ""},
-		{"forward . [::1]:53", false, ".", nil, 2, options{}, ""},
-		{"forward . [2003::1]:53", false, ".", nil, 2, options{}, ""},
+		{"forward . 127.0.0.1", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nexcept miek.nl\n}\n", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nmax_fails 3\n}\n", false, ".", nil, 3, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nforce_tcp\n}\n", false, ".", nil, 2, options{forceTCP: true, hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nprefer_udp\n}\n", false, ".", nil, 2, options{preferUDP: true, hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nforce_tcp\nprefer_udp\n}\n", false, ".", nil, 2, options{preferUDP: true, forceTCP: true, hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1:53", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1:8080", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . [::1]:53", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . [2003::1]:53", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nhealth_check_non_recursive\n}\n", false, ".", nil, 2, options{hcRecursionDesired: false}, ""},
+		{"forward . 127.0.0.1 \n", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
 		// negative
-		{"forward . a27.0.0.1", true, "", nil, 0, options{}, "not an IP"},
-		{"forward . 127.0.0.1 {\nblaatl\n}\n", true, "", nil, 0, options{}, "unknown property"},
+		{"forward . a27.0.0.1", true, "", nil, 0, options{hcRecursionDesired: true}, "not an IP"},
+		{"forward . 127.0.0.1 {\nblaatl\n}\n", true, "", nil, 0, options{hcRecursionDesired: true}, "unknown property"},
 		{`forward . ::1
-		forward com ::2`, true, "", nil, 0, options{}, "plugin"},
+		forward com ::2`, true, "", nil, 0, options{hcRecursionDesired: true}, "plugin"},
+		{"forward . 127.0.0.1 {\nhealth_check_non_recursive false\n}\n", true, ".", nil, 2, options{hcRecursionDesired: true}, "Wrong argument count or unexpected line ending"},
 	}
 
 	for i, test := range tests {

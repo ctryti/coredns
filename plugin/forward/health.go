@@ -15,6 +15,7 @@ type HealthChecker interface {
 	Check(*Proxy) error
 	SetTLSConfig(*tls.Config)
 	SetRecursionDesired(bool)
+	GetRecursionDesired() bool
 }
 
 // dnsHc is a health checker for a DNS endpoint (DNS, and DoT).
@@ -46,6 +47,9 @@ func (h *dnsHc) SetTLSConfig(cfg *tls.Config) {
 
 func (h *dnsHc) SetRecursionDesired(recursionDesired bool) {
 	h.recursionDesired = recursionDesired
+}
+func (h *dnsHc) GetRecursionDesired() bool {
+	return h.recursionDesired
 }
 
 // For HC we send to . IN NS +[no]rec message to the upstream. Dial timeouts and empty

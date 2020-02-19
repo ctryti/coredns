@@ -31,14 +31,15 @@ func TestSetup(t *testing.T) {
 		{"forward . 127.0.0.1:8080", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
 		{"forward . [::1]:53", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
 		{"forward . [2003::1]:53", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
-		{"forward . 127.0.0.1 {\nhealth_check_non_recursive\n}\n", false, ".", nil, 2, options{hcRecursionDesired: false}, ""},
+		{"forward . 127.0.0.1 {\nhealth_check 5s\n}\n", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
+		{"forward . 127.0.0.1 {\nhealth_check 5s no_rec\n}\n", false, ".", nil, 2, options{hcRecursionDesired: false}, ""},
 		{"forward . 127.0.0.1 \n", false, ".", nil, 2, options{hcRecursionDesired: true}, ""},
 		// negative
 		{"forward . a27.0.0.1", true, "", nil, 0, options{hcRecursionDesired: true}, "not an IP"},
 		{"forward . 127.0.0.1 {\nblaatl\n}\n", true, "", nil, 0, options{hcRecursionDesired: true}, "unknown property"},
 		{`forward . ::1
 		forward com ::2`, true, "", nil, 0, options{hcRecursionDesired: true}, "plugin"},
-		{"forward . 127.0.0.1 {\nhealth_check_non_recursive false\n}\n", true, ".", nil, 2, options{hcRecursionDesired: true}, "Wrong argument count or unexpected line ending"},
+		{"forward . 127.0.0.1 {\nhealth_check 0.5s rec\n}\n", true, ".", nil, 2, options{hcRecursionDesired: true}, "health_check: unknown option rec"},
 	}
 
 	for i, test := range tests {

@@ -24,7 +24,7 @@ type dnsHc struct {
 }
 
 // NewHealthChecker returns a new HealthChecker based on transport.
-func NewHealthChecker(trans string) HealthChecker {
+func NewHealthChecker(trans string, recursionDesired bool) HealthChecker {
 	switch trans {
 	case transport.DNS, transport.TLS:
 		c := new(dns.Client)
@@ -32,7 +32,7 @@ func NewHealthChecker(trans string) HealthChecker {
 		c.ReadTimeout = 1 * time.Second
 		c.WriteTimeout = 1 * time.Second
 
-		return &dnsHc{c: c, recursionDesired: true}
+		return &dnsHc{c: c, recursionDesired: recursionDesired}
 	}
 
 	log.Warningf("No healthchecker for transport %q", trans)

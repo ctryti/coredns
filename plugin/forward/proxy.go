@@ -29,7 +29,7 @@ func NewProxy(addr, trans string) *Proxy {
 		probe:     up.New(),
 		transport: newTransport(addr),
 	}
-	p.health = NewHealthChecker(trans)
+	p.health = NewHealthChecker(trans, true)
 	runtime.SetFinalizer(p, (*Proxy).finalizer)
 	return p
 }
@@ -42,11 +42,6 @@ func (p *Proxy) SetTLSConfig(cfg *tls.Config) {
 
 // SetExpire sets the expire duration in the lower p.transport.
 func (p *Proxy) SetExpire(expire time.Duration) { p.transport.SetExpire(expire) }
-
-// SetRecursionDesired sets recuresion desired flag on the lower proxy health checker
-func (p *Proxy) SetRecursionDesired(recursionDesired bool) {
-	p.health.SetRecursionDesired(recursionDesired)
-}
 
 // Healthcheck kicks of a round of health checks for this proxy.
 func (p *Proxy) Healthcheck() {
